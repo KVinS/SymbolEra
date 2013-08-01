@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:layout_width="fill_parent"
+ android:layout_height="fill_parent">
+
+       <TextView
+        android:id="@+id/GameTextView" 
+        android:background="@color/white"
+        android:layout_width="fill_parent" 
+		android:layout_height="fill_parent" 
+		android:layout_centerVertical="true"
+        android:textSize =  "20sp"
+        android:textColor="@color/black"
+        android:gravity="center"
+		android:lineSpacingExtra="-5dp"
+        android:text="GREEN"
+         >
+    </TextView>
+    
+
+<LinearLayout 
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:layout_alignParentBottom="true"
+android:gravity="center"
+>
+	
+	    <Button
+            android:id="@+id/button1" 
+            android:onClick="butClick"
+			android:textSize =  "20sp"
+            android:layout_width=" 45dp " android:layout_height=" 45dp " 
+			android:layout_gravity="center_vertical" 
+            android:padding="5dip" android:text="◀" android:textColor="#FFFFFF" />
+     
+<LinearLayout android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+    android:orientation="vertical" 
+	android:gravity="center_vertical"
+	android:layout_gravity="center_vertical" 
+	android:layout_centerVertical="true">
+    
+    <Button
+            android:id="@+id/button2"
+            android:onClick="butClick"
+			android:textSize =  "20sp"
+             android:layout_width=" 45dp " android:layout_height=" 45dp " 
+				android:gravity="center"
+   android:layout_gravity="center_vertical" 
+            android:padding="5dip" android:text="▲" android:textColor="#FFFFFF" />
+            
+           
+    <Button
+            android:id="@+id/button5"
+			android:textSize =  "20sp"     
+            android:onClick="butClick"
+
+            android:layout_width=" 45dp " android:layout_height=" 45dp " 
+			android:gravity="center"
+            android:padding="5dip" android:text="☩" android:textColor="#FFFFFF" />
+   
+    <Button
+            android:id="@+id/button3" 
+            android:onClick="butClick"
+android:textSize =  "20sp"
+            android:layout_width=" 45dp " android:layout_height=" 45dp " 
+   android:gravity="center"
+            android:padding="5dip" android:text="▼" android:textColor="#FFFFFF" />
+    
+    
+     </LinearLayout>
+  
+    <Button
+            android:id="@+id/button4" 
+            android:onClick="butClick"
+			android:textSize =  "20sp"
+            android:layout_width=" 45dp " android:layout_height=" 45dp " 
+			android:layout_gravity="center_vertical" 
+            android:padding="5dip" android:text="▶" android:textColor="#FFFFFF" />
+            
+       <TextView
+        android:id="@+id/tlog" 
+        android:background="@color/white"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:textSize =  "20sp"
+        android:textColor="@color/black"
+        android:padding="5dp"
+        android:text="GREEN"
+         >
+    </TextView>
+     </LinearLayout>
+       </RelativeLayout>
