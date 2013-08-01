@@ -31,16 +31,18 @@ public class GameActivity extends Activity {
     public Button action_button;
     public Handler h;
     public Unit hero;
+    private GameThread.GameThreadHandler mGameThreadHandler;
+    private GameThread mGameThread;
     public int action_type = 0;
-//0 - Идти
-//1 - Ломать
-//2 - Строить
-    public int width, vertical_rate;
-    public int height, horizontal_rate;
+//0 - Р�РґС‚Рё
+//1 - Р›РѕРјР°С‚СЊ
+//2 - РЎС‚СЂРѕРёС‚СЊ
+    public static int width, vertical_rate;
+    public static int height, horizontal_rate;
     public String log = "";
     public boolean day;
     public Set<Unit> unitsSet = new HashSet<Unit>();
-    public Set<Spauner> spaunersSet = new HashSet<Spauner>();
+    public Set<Spawner> spaunersSet = new HashSet<Spawner>();
 	
 	
     DisplayMetrics metrics;
@@ -147,8 +149,8 @@ public class GameActivity extends Activity {
         unitsSet.add(new Unit(4, world[11][1], world));
         unitsSet.add(new Unit(8, world[14][1], world));
 		
-		spaunersSet.add(new Spauner(37, 12, 2));
-		spaunersSet.add(new Spauner(1, 12, 1));
+		spaunersSet.add(new Spawner(37, 12, 2));
+		spaunersSet.add(new Spawner(1, 12, 1));
 		
         h = new Handler() {
             public void handleMessage(Message msg) {
@@ -163,6 +165,11 @@ public class GameActivity extends Activity {
                 gameView.setText(Html.fromHtml((String) msg.obj));
             };
         };
+        
+		mGameThread = new GameThread(unitsSet, hero, h, spaunersSet, world); 
+		mGameThreadHandler = mGameThread.new GameThreadHandler(mGameThread.getLooper());
+		CallerThread callerThread = new CallerThread(mGameThreadHandler);
+		callerThread.start();
 
             Thread t = new Thread(new Runnable() {
             Message msg;
@@ -175,34 +182,34 @@ public class GameActivity extends Activity {
 			while (true) {
 					start_time = System.currentTimeMillis();
                     if (day) {
-                        world[game_hour][0].image = "☁";
+                        world[game_hour][0].image = "в�Ѓ";
                         game_hour++;
                         if (game_hour == width) {
                             day = false;
                             game_hour--;
-                            world[game_hour][0].image = "☽";
+                            world[game_hour][0].image = "в�Ѕ";
                         } else {
-                            world[game_hour][0].image = "<font color = '#ffcc00'>☀</font>";
+                            world[game_hour][0].image = "<font color = '#ffcc00'>в�Ђ</font>";
                         }
                     } else {
-                        world[game_hour][0].image = "☁";
+                        world[game_hour][0].image = "в�Ѓ";
                         game_hour--;
                         if (game_hour == -1) {
                             day = true;
                             game_hour++;
-                            world[game_hour][0].image = "<font color = '#ffcc00'>☀</font>";
+                            world[game_hour][0].image = "<font color = '#ffcc00'>в�Ђ</font>";
                         } else {
-                            world[game_hour][0].image = "☽";
+                            world[game_hour][0].image = "в�Ѕ";
                         }
                     }
                     int rnd;
 
-					for (Spauner spauner : spaunersSet) {
-					spauner.last_spaun_time++;
-					if(spauner.last_spaun_time>spauner.cooldown && world[spauner.x][spauner.y].guest==null){
-					spauner.last_spaun_time = 0;
-					unitsSet.add(new Unit(spauner.mob_id, world[spauner.x][spauner.y], world));
-					}
+					for (Spawner spawner : spaunersSet) {
+						spawner.last_spaun_time++;
+						if(spawner.last_spaun_time>spawner.cooldown && world[spawner.x][spawner.y].guest==null){
+							spawner.last_spaun_time = 0;
+							unitsSet.add(new Unit(spawner.mob_id, world[spawner.x][spawner.y], world));
+						}
 					}
 					
                     Set<Unit> deletedUnitsSet = new HashSet<Unit>();
@@ -277,7 +284,7 @@ public class GameActivity extends Activity {
 					
                     unitsSet.removeAll(deletedUnitsSet);
                     deletedUnitsSet.removeAll(deletedUnitsSet);
-                    msg = h.obtainMessage(0, 0, 0, render());
+//                    msg = h.obtainMessage(0, 0, 0, render());
                     h.sendMessage(msg);
 
                 delta_time = 350 - (System.currentTimeMillis() - start_time);
@@ -288,7 +295,7 @@ TimeUnit.MILLISECONDS.sleep(delta_time);
 } catch (InterruptedException e) {
           e.printStackTrace();
         }
-				tLog(hero.hp + "❤ " + hero.x + ":" + hero.y+"| "+delta_time+"ml");
+				tLog(hero.hp + "вќ¤ " + hero.x + ":" + hero.y+"| "+delta_time+"ml");
              } else {
 				tLog("ahtung!");
                 }
@@ -298,23 +305,7 @@ TimeUnit.MILLISECONDS.sleep(delta_time);
         t.start();
     }
 
-    public String render() {
-        String str = new String();
-        int startX, finishX, startY, finishY;
-
-        startX = (hero.x - horizontal_rate < 0) ? 0 : hero.x - horizontal_rate;
-        finishX = (hero.x + horizontal_rate > width) ? width : hero.x + horizontal_rate;
-        startY = (hero.y - vertical_rate < 0) ? 0 : hero.y - vertical_rate;
-        finishY = (hero.y + vertical_rate > height) ? height : hero.y + vertical_rate;
-
-        for (int i = startY; i < finishY; i++) {
-            for (int j = startX; j < finishX; j++) {
-                str = str.concat(world[j][i].image);
-            }
-            str = str.concat("<br>");
-        }
-        return str;
-    }
+    
 
     public void butClick(View view) {
         switch (view.getId()) {
@@ -339,13 +330,13 @@ TimeUnit.MILLISECONDS.sleep(delta_time);
 
                 switch (action_type) {
                     case 0:
-                        action_button.setText("☩");
+                        action_button.setText("в�©");
                         break;
                     case 1:
-                        action_button.setText("⚔");
+                        action_button.setText("вљ”");
                         break;
                     case 2:
-                        action_button.setText("⚒");
+                        action_button.setText("вљ’");
                         break;
                 }
                 break;
