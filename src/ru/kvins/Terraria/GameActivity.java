@@ -40,6 +40,9 @@ public class GameActivity extends Activity {
     public String log = "";
     public boolean day;
     public Set<Unit> unitsSet = new HashSet<Unit>();
+    public Set<Spauner> spaunersSet = new HashSet<Spauner>();
+	
+	
     DisplayMetrics metrics;
 
     @Override
@@ -119,7 +122,21 @@ public class GameActivity extends Activity {
         createBlock(0, 11, 6);
         createBlock(6, 10, 5);
 
-
+        createBlock(33, 14, 8);
+        createBlock(40, 14, 8);
+        createBlock(33, 13, 6);
+        createBlock(40, 13, 6);
+        createBlock(33, 12, 6);
+        createBlock(40, 12, 6);
+        createBlock(33, 11, 6);
+        createBlock(40, 11, 6);
+        createBlock(34, 10, 6);
+        createBlock(35, 10, 6);
+        createBlock(36, 10, 6);
+        createBlock(37, 10, 6);
+        createBlock(38, 10, 6);
+        createBlock(39, 10, 6);
+		
         hero = new Unit(0, world[5][1], world);
         unitsSet.add(hero);
 
@@ -127,9 +144,9 @@ public class GameActivity extends Activity {
         unitsSet.add(new Unit(2, world[9][1], world));
         unitsSet.add(new Unit(4, world[11][1], world));
         unitsSet.add(new Unit(8, world[14][1], world));
-        unitsSet.add(new Unit(4, world[101][1], world));
-        unitsSet.add(new Unit(8, world[140][1], world));
-        unitsSet.add(new Unit(2, world[190][1], world));
+		
+		spaunersSet.add(new Spauner(37, 12, 2));
+		spaunersSet.add(new Spauner(1, 12, 1));
 		
         h = new Handler() {
             public void handleMessage(Message msg) {
@@ -177,6 +194,15 @@ public class GameActivity extends Activity {
                         }
                     }
                     int rnd;
+
+					for (Spauner spauner : spaunersSet) {
+					spauner.last_spaun_time++;
+					if(spauner.last_spaun_time>spauner.cooldown && world[spauner.x][spauner.y].guest==null){
+					spauner.last_spaun_time = 0;
+					unitsSet.add(new Unit(spauner.mob_id, world[spauner.x][spauner.y], world));
+					}
+					}
+					
                     Set<Unit> deletedUnitsSet = new HashSet<Unit>();
 
                     for (Unit unit : unitsSet) {
@@ -202,7 +228,7 @@ public class GameActivity extends Activity {
                                 } else if (unit.enemy == null) {
                                     int range = 40;
                                     for (Unit target : unitsSet) {
-                                        if ((unit.enemys & target.type) == target.type) {
+                                        if ((unit.enemys & target.fraction) == target.fraction) {
                                             if (target.hp > 0 && range >= Math.abs(unit.x - target.x)) {
                                                 unit.enemy = target;
                                             }
@@ -246,7 +272,7 @@ public class GameActivity extends Activity {
                             unit.Update();
                         }
                     }
-
+					
                     unitsSet.removeAll(deletedUnitsSet);
                     deletedUnitsSet.removeAll(deletedUnitsSet);
                     msg = h.obtainMessage(0, 0, 0, render());

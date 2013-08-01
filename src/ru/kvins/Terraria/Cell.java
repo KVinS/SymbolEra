@@ -15,7 +15,6 @@ admission = 15;
 toStart();
 }
 
-
 public void toStart(){
 switch (type){
 case 0:
@@ -78,11 +77,19 @@ case 7:
 input = 3;
 input_s = 0;
 output = 0;
-image="<font color = '#99958c'>╂</font>";
+image="<font color = '#99958c'>┼</font>";
 def = 100;
 admission = 1;
 break;
 
+case 8:
+input = 3;
+input_s = 0;
+output = 0;
+image="<font color = '#99958c'>┼</font>";
+def = 100;
+admission = 2;
+break;
 }
 }
 
