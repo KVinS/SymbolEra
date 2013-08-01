@@ -59,9 +59,7 @@ public class GameActivity extends Activity {
         gameView = (TextView) findViewById(R.id.GameTextView);
         tlog = (TextView) findViewById(R.id.tlog);
 
-
-        Typeface tf = Typeface.createFromAsset(getAssets(),
-                "fonts/DejaVuSansMono.ttf");
+        Typeface tf = Typeface.createFromAsset(getAssets(),"fonts/DejaVuSansMono.ttf");
         gameView.setTypeface(tf);
         action_button = (Button) findViewById(R.id.button1);
         action_button.setTypeface(tf);
@@ -83,12 +81,10 @@ public class GameActivity extends Activity {
         int symbol_height = (int) (bounds.height() * getResources().getDisplayMetrics().density);
 
         while (horizontal_rate * symbol_width < metrics.widthPixels / 2) {
-            gameView.append(".");
             horizontal_rate++;
         }
         gameView.setText("");
         while (vertical_rate * symbol_height < metrics.heightPixels / 2) {
-            gameView.append("\n.");
             vertical_rate++;
         }
         tLog(symbol_width + " " + symbol_height);
@@ -98,7 +94,6 @@ public class GameActivity extends Activity {
             for (int j = 0; j < height - 25; j++) {
                 if (j == height - 26 && Math.random() * 10 < 5) {
                     world[i][j] = new Cell(i, j, 2);
-
                 } else {
                     world[i][j] = new Cell(i, j, 0);
                 }
@@ -111,8 +106,7 @@ public class GameActivity extends Activity {
             }
         }
 
-
-        createBlock(6, 14, 6);
+        createBlock(6, 14, 7);
         createBlock(6, 13, 6);
         createBlock(6, 12, 6);
         createBlock(6, 11, 6);
@@ -148,41 +142,38 @@ public class GameActivity extends Activity {
                 }
                 tlog.setText(log);
                 gameView.setText(Html.fromHtml((String) msg.obj));
-            }
-        ;
-
+            };
         };
 
-Thread t = new Thread(new Runnable() {
+            Thread t = new Thread(new Runnable() {
             Message msg;
 
             public void run() {
-                int hour = 0;
-                day = true;
+            int game_hour = 0;
+            day = true;
 
-		
             long start_time,delta_time;
 			while (true) {
-					//start_time = System.currentTimeMillis();
+					start_time = System.currentTimeMillis();
                     if (day) {
-                        world[hour][0].image = "☁";
-                        hour++;
-                        if (hour == width) {
+                        world[game_hour][0].image = "☁";
+                        game_hour++;
+                        if (game_hour == width) {
                             day = false;
-                            hour--;
-                            world[hour][0].image = "☽";
+                            game_hour--;
+                            world[game_hour][0].image = "☽";
                         } else {
-                            world[hour][0].image = "<font color = '#ffcc00'>☀</font>";
+                            world[game_hour][0].image = "<font color = '#ffcc00'>☀</font>";
                         }
                     } else {
-                        world[hour][0].image = "☁";
-                        hour--;
-                        if (hour == -1) {
+                        world[game_hour][0].image = "☁";
+                        game_hour--;
+                        if (game_hour == -1) {
                             day = true;
-                            hour++;
-                            world[hour][0].image = "<font color = '#ffcc00'>☀</font>";
+                            game_hour++;
+                            world[game_hour][0].image = "<font color = '#ffcc00'>☀</font>";
                         } else {
-                            world[hour][0].image = "☽";
+                            world[game_hour][0].image = "☽";
                         }
                     }
                     int rnd;
@@ -198,7 +189,7 @@ Thread t = new Thread(new Runnable() {
                             deletedUnitsSet.add(unit);
                         } else {
                             if (unit.AI) {
-                                if (unit.type == 8) {
+                                if (unit.fraction == 8) {
                                     rnd = (int) (Math.random() * 6);
                                     if (rnd == 1) {
                                         unit.speedX = -1;
@@ -261,18 +252,18 @@ Thread t = new Thread(new Runnable() {
                     msg = h.obtainMessage(0, 0, 0, render());
                     h.sendMessage(msg);
 
-               // delta_time = 350 - (System.currentTimeMillis() - start_time);
+                delta_time = 350 - (System.currentTimeMillis() - start_time);
 
-               // if (delta_time > 0) {
+                if (delta_time > 0) {
 				try{
-TimeUnit.MILLISECONDS.sleep(350);
+TimeUnit.MILLISECONDS.sleep(delta_time);
 } catch (InterruptedException e) {
           e.printStackTrace();
         }
 				tLog(hero.hp + "❤ " + hero.x + ":" + hero.y+"| "+delta_time+"ml");
-             //   } else {
-			//	tLog("ahtung!");
-             //   }
+             } else {
+				tLog("ahtung!");
+                }
                 }
             }
         });
@@ -353,7 +344,6 @@ TimeUnit.MILLISECONDS.sleep(350);
                         hero.speedY = 3;
                     }
                     break;
-
                 case 1:
                     if (world[x][y].guest == null) {
                         world[x][y].dm(hero.attack);
@@ -363,9 +353,7 @@ TimeUnit.MILLISECONDS.sleep(350);
                         target.enemy = hero;
                         target.hp -= dm;
                     }
-
                     break;
-
                 case 2:
                     world[x][y].type = 1;
                     world[x][y].toStart();

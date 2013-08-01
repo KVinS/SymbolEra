@@ -4,13 +4,14 @@ public class Cell {
 public Unit guest;
 public int type, input, output, input_s, def;
 public String image;
-public int x, y;
+public int x, y, admission;
 
 public Cell(int _x, int _y, int _t){
 type = _t;
 x = _x;
 y = _y;
 guest = null;
+admission = 15;
 toStart();
 }
 
@@ -72,6 +73,16 @@ output = 0;
 image="<font color = '#99958c'>█</font>";
 def = 100;
 break;
+
+case 7:
+input = 3;
+input_s = 0;
+output = 0;
+image="<font color = '#99958c'>╂</font>";
+def = 100;
+admission = 1;
+break;
+
 }
 }
 
