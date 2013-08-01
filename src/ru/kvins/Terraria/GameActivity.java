@@ -115,6 +115,8 @@ public class GameActivity extends Activity {
         createBlock(6, 11, 6);
         createBlock(5, 11, 6);
         createBlock(4, 11, 6);
+        createBlock(3, 14, 4);
+        createBlock(3, 13, 4);
         createBlock(3, 12, 4);
         createBlock(3, 11, 4);
         createBlock(2, 11, 6);
@@ -207,7 +209,7 @@ public class GameActivity extends Activity {
 
                     for (Unit unit : unitsSet) {
                         if (unit.hp <= 0) {
-                            unit.position.type = 3;
+                            //unit.position.type = 3;
                             unit.position.toStart();
                             unit.position.guest = null;
                             unit.position = null;
