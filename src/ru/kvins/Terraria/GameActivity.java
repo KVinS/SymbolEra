@@ -299,7 +299,7 @@ TimeUnit.MILLISECONDS.sleep(delta_time);
     }
 
     public String render() {
-        String str = new String();
+        StringBuilder str = new StringBuilder();
         int startX, finishX, startY, finishY;
 
         startX = (hero.x - horizontal_rate < 0) ? 0 : hero.x - horizontal_rate;
@@ -309,11 +309,11 @@ TimeUnit.MILLISECONDS.sleep(delta_time);
 
         for (int i = startY; i < finishY; i++) {
             for (int j = startX; j < finishX; j++) {
-                str = str.concat(world[j][i].image);
+              str.append(world[j][i].image);
             }
-            str = str.concat("<br>");
+          str.append("<br>");
         }
-        return str;
+        return str.toString();
     }
 
     public void butClick(View view) {
