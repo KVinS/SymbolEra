@@ -23,9 +23,9 @@ public class GameThread extends Thread{
 	private static int width, vertical_rate;
 	private static int height, horizontal_rate;
 	
-	public GameThread(Set<Unit> unitsSet, Unit hero, Handler guiThreadHandler, Set<Spawner> spawnersSet, Cell[][] gameWorld) {
+	public GameThread(Set<Unit> unitsSet, Unit mHero, Handler guiThreadHandler, Set<Spawner> spawnersSet, Cell[][] gameWorld) {
 		this.mUnitsSet = unitsSet;
-		this.mHero = hero;
+		this.mHero = mHero;
 		this.mGUIThreadHandler = guiThreadHandler;
 		this.mSpawnersSet = spawnersSet;
 		this.mGameWorld = gameWorld;
@@ -74,10 +74,48 @@ public class GameThread extends Thread{
 					initNPCLogic();
 					break;
 				case PLAYER_PRESSED_BUTTON:
+					int x = msg.arg1;
+					int y = msg.arg2;
+					int actionType = (Integer) msg.obj;
+					onPlayerPressedButton(x, y, actionType);
 					break;
 			}
 		}
 		
+	}
+	
+	private void onPlayerPressedButton(int x, int y, int actionType) {
+		if (x > 0 && y > 0 && x < width && y < height) {
+            switch (actionType) {
+                case 0:
+                    if (x < mHero.x) {
+                        mHero.speedX = -1;
+                    } else if (x > mHero.x) {
+                        mHero.speedX = 1;
+                    } else if (y < mHero.y) {
+                        if (!((mGameWorld[mHero.x][mHero.y + 1].input & 8) == 8)) {
+                            mHero.speedY = -3;
+                        }
+                    } else if (y > mHero.y) {
+                        mHero.speedY = 3;
+                    }
+                    break;
+                case 1:
+                    if (mGameWorld[x][y].guest == null) {
+                        mGameWorld[x][y].dm(mHero.attack);
+                    } else {
+                        Unit target = mGameWorld[x][y].guest;
+                        int dm = (target.def - mHero.attack > 2) ? target.def - mHero.attack : 2;
+                        target.enemy = mHero;
+                        target.hp -= dm;
+                    }
+                    break;
+                case 2:
+                    mGameWorld[x][y].type = 1;
+                    mGameWorld[x][y].toStart();
+                    break;
+            }
+        }
 	}
 	
 	private void initNPCLogic() {
@@ -181,5 +219,33 @@ public class GameThread extends Thread{
         }
         return str;
     }
+	
+	
+	/*
+	 *   int game_hour = 0;
+            day = true;
+            start_time = System.currentTimeMillis();
+            if (day) {
+                world[game_hour][0].image = "в�Ѓ";
+                game_hour++;
+                if (game_hour == width) {
+                    day = false;
+                    game_hour--;
+                    world[game_hour][0].image = "в�Ѕ";
+                } else {
+                    world[game_hour][0].image = "<font color = '#ffcc00'>в�Ђ</font>";
+                }
+            } else {
+                world[game_hour][0].image = "в�Ѓ";
+                game_hour--;
+                if (game_hour == -1) {
+                    day = true;
+                    game_hour++;
+                    world[game_hour][0].image = "<font color = '#ffcc00'>в�Ђ</font>";
+                } else {
+                    world[game_hour][0].image = "в�Ѕ";
+                }
+            }
+    */
 	
 }

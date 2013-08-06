@@ -167,142 +167,10 @@ public class GameActivity extends Activity {
         };
         
 		mGameThread = new GameThread(unitsSet, hero, h, spaunersSet, world); 
+		mGameThread.start();
 		mGameThreadHandler = mGameThread.new GameThreadHandler(mGameThread.getLooper());
 		CallerThread callerThread = new CallerThread(mGameThreadHandler);
 		callerThread.start();
-
-            Thread t = new Thread(new Runnable() {
-            Message msg;
-
-            public void run() {
-            int game_hour = 0;
-            day = true;
-
-            long start_time,delta_time;
-			while (true) {
-					start_time = System.currentTimeMillis();
-                    if (day) {
-                        world[game_hour][0].image = "в�Ѓ";
-                        game_hour++;
-                        if (game_hour == width) {
-                            day = false;
-                            game_hour--;
-                            world[game_hour][0].image = "в�Ѕ";
-                        } else {
-                            world[game_hour][0].image = "<font color = '#ffcc00'>в�Ђ</font>";
-                        }
-                    } else {
-                        world[game_hour][0].image = "в�Ѓ";
-                        game_hour--;
-                        if (game_hour == -1) {
-                            day = true;
-                            game_hour++;
-                            world[game_hour][0].image = "<font color = '#ffcc00'>в�Ђ</font>";
-                        } else {
-                            world[game_hour][0].image = "в�Ѕ";
-                        }
-                    }
-                    int rnd;
-
-					for (Spawner spawner : spaunersSet) {
-						spawner.last_spaun_time++;
-						if(spawner.last_spaun_time>spawner.cooldown && world[spawner.x][spawner.y].guest==null){
-							spawner.last_spaun_time = 0;
-							unitsSet.add(new Unit(spawner.mob_id, world[spawner.x][spawner.y], world));
-						}
-					}
-					
-                    Set<Unit> deletedUnitsSet = new HashSet<Unit>();
-
-                    for (Unit unit : unitsSet) {
-                        if (unit.hp <= 0) {
-                            //unit.position.type = 3;
-                            unit.position.toStart();
-                            unit.position.guest = null;
-                            unit.position = null;
-                            unit.enemy = null;
-                            deletedUnitsSet.add(unit);
-                        } else {
-                            if (unit.AI) {
-                                if (unit.fraction == 8) {
-                                    rnd = (int) (Math.random() * 6);
-                                    if (rnd == 1) {
-                                        unit.speedX = -1;
-                                    } else if (rnd == 0) {
-                                        unit.speedX = 1;
-                                    }
-                                    if (!((world[unit.x][unit.y + 1].input & 8) == 8)) {
-                                        unit.speedY = (int) (Math.random() * -2);
-                                    }
-                                } else if (unit.enemy == null) {
-                                    int range = 40;
-                                    for (Unit target : unitsSet) {
-                                        if ((unit.enemys & target.fraction) == target.fraction) {
-                                            if (target.hp > 0 && range >= Math.abs(unit.x - target.x)) {
-                                                unit.enemy = target;
-                                            }
-                                        }
-                                    }
-                                    if (unit.enemy == null) {
-                                        rnd = (int) (Math.random() * 6);
-                                        if (rnd == 1) {
-                                            unit.speedX = -1;
-                                        } else if (rnd == 0) {
-                                            unit.speedX = 1;
-                                        }
-                                        if (!((world[unit.x][unit.y + 1].input & 8) == 8)) {
-                                            unit.speedY = (int) (Math.random() * -2);
-                                        }
-                                    }
-                                } else {
-                                    Unit target = unit.enemy;
-                                    if (unit.range >= (Math.abs(unit.x - target.x) + Math.abs(unit.y - target.y))) {
-                                        int dm = (target.def - unit.attack > 2) ? target.def - unit.attack : 2;
-                                        target.enemy = unit;
-                                        target.hp -= dm;
-
-                                    } else if (unit.x < target.x) {
-                                        unit.speedX = 1;
-                                        if ((world[unit.x + 1][unit.y].input & 2) == 2 && !((world[unit.x][unit.y + 1].input & 8) == 8)) {
-                                            unit.speedY -= 3;
-                                        }
-                                    } else if (unit.x > target.x) {
-                                        unit.speedX = -1;
-                                        if ((world[unit.x - 1][unit.y].input & 1) == 1 && !((world[unit.x][unit.y + 1].input & 8) == 8)) {
-                                            unit.speedY -= 3;
-                                        }
-                                    }
-                                    if (unit.enemy != null && unit.enemy.hp <= 0) {
-                                        unit.enemy = null;
-                                    }
-
-                                }
-                            }
-                            unit.Update();
-                        }
-                    }
-					
-                    unitsSet.removeAll(deletedUnitsSet);
-                    deletedUnitsSet.removeAll(deletedUnitsSet);
-//                    msg = h.obtainMessage(0, 0, 0, render());
-                    h.sendMessage(msg);
-
-                delta_time = 350 - (System.currentTimeMillis() - start_time);
-
-                if (delta_time > 0) {
-				try{
-TimeUnit.MILLISECONDS.sleep(delta_time);
-} catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-				tLog(hero.hp + "вќ¤ " + hero.x + ":" + hero.y+"| "+delta_time+"ml");
-             } else {
-				tLog("ahtung!");
-                }
-                }
-            }
-        });
-        t.start();
     }
 
     
@@ -348,37 +216,7 @@ TimeUnit.MILLISECONDS.sleep(delta_time);
     }
 
     public void action(int x, int y) {
-        if (x > 0 && y > 0 && x < width && y < height) {
-            switch (action_type) {
-                case 0:
-                    if (x < hero.x) {
-                        hero.speedX = -1;
-                    } else if (x > hero.x) {
-                        hero.speedX = 1;
-                    } else if (y < hero.y) {
-                        if (!((world[hero.x][hero.y + 1].input & 8) == 8)) {
-                            hero.speedY = -3;
-                        }
-                    } else if (y > hero.y) {
-                        hero.speedY = 3;
-                    }
-                    break;
-                case 1:
-                    if (world[x][y].guest == null) {
-                        world[x][y].dm(hero.attack);
-                    } else {
-                        Unit target = world[x][y].guest;
-                        int dm = (target.def - hero.attack > 2) ? target.def - hero.attack : 2;
-                        target.enemy = hero;
-                        target.hp -= dm;
-                    }
-                    break;
-                case 2:
-                    world[x][y].type = 1;
-                    world[x][y].toStart();
-                    break;
-            }
-        }
+    	mGameThreadHandler.sendMessage(mGameThreadHandler.obtainMessage(GameThread.PLAYER_PRESSED_BUTTON, x, y, action_type));
     }
 
     public void createBlock(int x, int y, int t) {
